@@ -1,0 +1,122 @@
+.selectContainer {
+  width: auto;
+  border: 1px solid #d9d9d9;
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  position: relative;
+  border-radius: 6px;
+}
+
+.selectContainer:hover {
+  border-color: #4096ff;
+}
+
+.selectContainer:active {
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+}
+
+.selectContainer .selectPickZone {
+  height: 30px;
+  min-width: 200px;
+  padding: 0 11px;
+  cursor: pointer;
+  position: relative;
+}
+.selectContainer .selectPickZone.search {
+  cursor: text;
+}
+
+.selectLabel {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  line-height: 100%;
+  color: rgba(0, 0, 0, 0.25);
+  user-select: none;
+  text-overflow: ellipsis;
+}
+
+.selectValue {
+  display: flex;
+  height: 100%;
+  align-items: center;
+  line-height: 100%;
+  color: rgba(99, 99, 99, 1);
+  user-select: none;
+  text-overflow: ellipsis;
+}
+
+/* Search */
+input.selectValue {
+  display: block;
+  margin: 0;
+  border: none;
+  outline: none;
+  color: rgba(99, 99, 99, 1);
+  position: absolute;
+  left: 11px;
+  top: 0;
+  bottom: 0;
+  right: 11px;
+  background-color: transparent;
+}
+
+.selectDropdown {
+  position: absolute;
+  top: calc(100% + 5px);
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  background-color: #fff;
+  padding: 4px;
+  width: 100%;
+  border-radius: 6px;
+  max-height: 300px;
+  overflow-y: hidden;
+  display: none;
+}
+
+.selectDropdown.show {
+  display: block;
+}
+
+.selectList {
+  background-color: #fff;
+  width: 100%;
+  border-radius: 6px;
+  max-height: 292px;
+  overflow-y: scroll;
+  list-style: none;
+}
+
+.selectList::-webkit-scrollbar {
+  width: 5px;
+  position: absolute;
+}
+
+.selectList::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.selectList::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.selectList::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.selectList > li {
+  border-radius: 6px;
+  padding: 7px 10px;
+  cursor: pointer;
+  user-select: none;
+  color: rgba(0, 0, 0, 0.88);
+  transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+.selectList > li:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+.selectList > li.active {
+  background-color: #e6f4ff;
+  font-weight: 600;
+}
