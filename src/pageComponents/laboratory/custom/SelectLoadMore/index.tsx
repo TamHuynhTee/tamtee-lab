@@ -1,6 +1,7 @@
 import SelectCustom from '@/components/SelectCustom';
 import { useEffect, useState } from 'react';
 import styles from './style.module.css';
+import { Select } from 'antd';
 
 type Props = {};
 
@@ -15,38 +16,49 @@ const dbData = [
   6752, 72, 58, 36, 64,
 ];
 
-const getData = ({
-  limit = 5,
-  skip = 0,
-}: {
-  limit?: number;
-  skip?: number;
-}): Promise<number[]> => {
-  const start = skip,
-    end = skip + limit;
-  const response = dbData.slice(start, end);
-
-  return new Promise((res, rej) => {
-    if (response) return res(response);
-    return rej('Failed to retrieve from DB');
-  });
-};
-
-const formatOption = (data: number[]): Option[] => {
-  return data.map((e, i) => ({
-    label: e.toString(),
-    value: e,
-    key: Math.random() * 100 + e,
-  }));
-};
-
 const LIMIT = 10;
 
 const SelectLoadMore = (props: Props) => {
   const [options, setOptions] = useState<Option[]>([]);
   const [skip, setSkip] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const isEnough = dbData.length < skip;
+  const [total, setTotal] = useState<number>(0);
+
+  const isEnough = total < skip;
+
+  const getData = ({
+    limit = 5,
+    skip = 0,
+  }: {
+    limit?: number;
+    skip?: number;
+  }): Promise<{ list: number[]; total: number }> => {
+    setLoading(true);
+    const start = skip,
+      end = skip + limit;
+    const response = dbData.slice(start, end);
+
+    return new Promise((res, rej) => {
+      setTimeout(() => {
+        setLoading(false);
+        if (response)
+          return res({
+            total: dbData.length,
+            list: response,
+          });
+        return rej('Failed to retrieve from DB');
+      }, 500);
+    });
+  };
+
+  const formatOption = (data: number[]): Option[] => {
+    return data.map((e, i) => ({
+      label: e.toString(),
+      value: e,
+      key: Math.random() * 100 + e,
+    }));
+  };
 
   useEffect(() => {
     (async () => {
@@ -54,7 +66,8 @@ const SelectLoadMore = (props: Props) => {
         limit: LIMIT,
         skip,
       });
-      setOptions(formatOption(response));
+      setOptions(formatOption(response.list));
+      setTotal(response.total);
     })();
   }, []);
 
@@ -62,25 +75,39 @@ const SelectLoadMore = (props: Props) => {
     try {
       const nextSkip = skip + LIMIT;
       const response = await getData({ skip: nextSkip, limit: LIMIT });
-      setOptions((opts) => [...opts, ...formatOption(response)]);
+      setOptions((opts) => [...opts, ...formatOption(response.list)]);
       setSkip(nextSkip);
     } catch (error) {
       console.log('error');
     }
   };
 
-  const loadMore = {
-    onLoadMore: handleLoadMore,
-    isEnough,
-  };
-
   return (
     <div className={styles.wrapper}>
-      <SelectCustom
+      {/* <SelectCustom
         options={options}
         loadMore={loadMore}
         label={'Hello'}
         // searchable
+      /> */}
+      <Select
+        style={{
+          minWidth: '200px',
+        }}
+        loading={loading}
+        options={options}
+        onPopupScroll={async (e: any) => {
+          const { target } = e;
+          if (
+            (target as any).scrollTop + (target as any).offsetHeight ===
+            (target as any).scrollHeight
+          ) {
+            // if not load all;
+            if (!isEnough) {
+              handleLoadMore();
+            }
+          }
+        }}
       />
     </div>
   );
