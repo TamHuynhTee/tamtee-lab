@@ -31,33 +31,6 @@ const LoadMoreObserver = (props: Props) => {
   const [list, setList] = useState<number[]>([]);
   const [currentSkip, setCurrentSkip] = useState<number>(0);
 
-  const [isVisible, setIsVisible] = useState(false);
-  const loadMoreRef = useRef<HTMLDivElement>(null);
-
-  const callbackFn = (entries: Array<IntersectionObserverEntry>) => {
-    const [entry] = entries;
-    setIsVisible(entry.isIntersecting);
-    if (entry.isIntersecting)
-      setTimeout(() => {
-        if (!isVisible) fetchData(currentSkip);
-      }, 1000);
-  };
-
-  const options = {
-    root: null,
-    rootMargin: '100%',
-    threshold: 1,
-  };
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(callbackFn, options);
-    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
-
-    return () => {
-      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
-    };
-  }, [loadMoreRef, options]);
-
   const total = data.length;
 
   const showLoadMore = currentSkip < total;
@@ -67,6 +40,12 @@ const LoadMoreObserver = (props: Props) => {
     setList([...list, ...result]);
     setCurrentSkip(skip + LIMIT);
   };
+
+  const intersectingCallback = () => fetchData(currentSkip);
+
+  const { isVisible, loadMoreRef } = LoadMoreObserverHook({
+    intersectingCallback,
+  });
 
   useEffect(() => {
     fetchData(currentSkip);
@@ -88,6 +67,46 @@ const LoadMoreObserver = (props: Props) => {
       </div>
     </div>
   );
+};
+
+const LoadMoreObserverHook = ({
+  options = {
+    root: null,
+    rootMargin: '100%',
+    threshold: 1,
+  },
+  observerCallbackTimeout = 1000,
+  intersectingCallback,
+}: {
+  options?: any;
+  observerCallbackTimeout?: number;
+  intersectingCallback: () => void;
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  const observerCallbackFn = (entries: Array<IntersectionObserverEntry>) => {
+    const [entry] = entries;
+    setIsVisible(entry.isIntersecting);
+    if (entry.isIntersecting)
+      setTimeout(() => {
+        if (!isVisible) intersectingCallback();
+      }, observerCallbackTimeout);
+  };
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(observerCallbackFn, options);
+    if (loadMoreRef.current) observer.observe(loadMoreRef.current);
+
+    return () => {
+      if (loadMoreRef.current) observer.unobserve(loadMoreRef.current);
+    };
+  }, [loadMoreRef, options]);
+
+  return {
+    isVisible,
+    loadMoreRef,
+  };
 };
 
 export default LoadMoreObserver;

@@ -6,15 +6,16 @@ import TableSelection from '@/pageComponents/laboratory/antd/TableSelection';
 import CustomLaboratory from '@/pageComponents/laboratory/custom';
 import ErrorBoundaryPage from '@/pageComponents/laboratory/custom/ErrorBoundaries';
 import LoadMoreObserver from '@/pageComponents/laboratory/custom/LoadMoreObserver';
+import ScanBarcode from '@/pageComponents/laboratory/custom/ScanBarcode';
 
 export type ILabIDItem = {
   path: string;
   component: JSX.Element | React.ReactNode;
   children?: ILabIDItem[];
 };
-type ILabID = ILabIDItem[];
+export type ILabIDList = ILabIDItem[];
 
-export const LAB_ID_PATH: ILabID = [
+export const LAB_ID_PATH: ILabIDList = [
   {
     path: 'antd',
     component: <AntdLaboratory />,
@@ -48,6 +49,10 @@ export const LAB_ID_PATH: ILabID = [
       {
         path: 'error-boundaries',
         component: <ErrorBoundaryPage />,
+      },
+      {
+        path: 'scan-barcode',
+        component: <ScanBarcode />,
       },
     ],
   },

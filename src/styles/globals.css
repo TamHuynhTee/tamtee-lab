@@ -95,3 +95,7 @@ a {
     color-scheme: dark;
   }
 }
+
+.pageContainer {
+  margin: 50px;
+}

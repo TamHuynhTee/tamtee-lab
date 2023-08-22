@@ -1,6 +1,7 @@
 import { ILabIDItem, LAB_ID_PATH } from '@/constant/labID';
 import { useRouter } from 'next/router';
 import { useCallback, useMemo } from 'react';
+import { Alert } from 'antd';
 
 type Props = {};
 
@@ -24,12 +25,13 @@ const LabID = (props: Props) => {
 
     const level0ID = LAB_ID_PATH.find((e) => e.path == level0Path);
 
-    if (!level0ID) return <>No lab id match</>;
+    if (!level0ID)
+      return <Alert type="warning" showIcon message={'No lab id match'} />;
 
     return LabComponent(level0ID);
   }, [labID]);
 
-  return <>{LabPath}</>;
+  return <div className="pageContainer">{LabPath}</div>;
 };
 
 export default LabID;
